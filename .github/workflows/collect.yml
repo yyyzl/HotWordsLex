@@ -1,0 +1,58 @@
+name: Collect Hot Words
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 2 * * *'  # 每天 UTC 凌晨2点
+  workflow_dispatch:          # 手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: src
+      HOTWORDS_PUBLISH_REPO: ${{ github.repository }}
+      HOTWORDS_PUBLISH_REF: ${{ github.ref_name }}
+      LLM_API_KEYS: ${{ secrets.LLM_API_KEYS || vars.LLM_API_KEYS || secrets.LLM_API_KEY || vars.LLM_API_KEY }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY || vars.LLM_API_KEY }}
+      LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT || vars.LLM_ENDPOINT || 'https://api.longcat.chat/openai/v1/chat/completions' }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL || vars.LLM_MODEL || 'LongCat-Flash-Lite' }}
+      EXTRACT_ROUNDS: ${{ vars.EXTRACT_ROUNDS || '5' }}
+      MIN_FREQUENCY: ${{ vars.MIN_FREQUENCY || '50' }}
+      TIME_WINDOW_DAYS: ${{ vars.TIME_WINDOW_DAYS || '3' }}
+      HOTWORDS_FILE: ${{ vars.HOTWORDS_FILE || 'hotwords.txt' }}
+      GITHUB_TOKEN: ${{ secrets.GH_PAT || github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Validate required credentials
+        run: |
+          if [ -z "${LLM_API_KEYS}" ] && [ -z "${LLM_API_KEY}" ]; then
+            echo "缺少 LLM_API_KEYS/LLM_API_KEY。"
+            echo "请在 Repository Secrets 或 Variables 中配置。"
+            exit 1
+          fi
+
+      - name: Run collection
+        run: uv run python -m hotwords_lex --hotwords-file "${HOTWORDS_FILE}" --output output
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add hotwords.txt output/hotwords_latest.txt output/hotwords_latest.json output/hotwords_latest_endpoints.json
+          git diff --staged --quiet || git commit -m "chore: publish hotwords $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push

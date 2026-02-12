@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+
+# Environment & secrets
+.env
+keys.txt
+
+# Output
+output/*.json
+!output/hotwords_latest.json
+!output/hotwords_latest_endpoints.json
+output/hotwords_merged_*.txt
+src/output/
+src/hotwords.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
