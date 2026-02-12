@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-02-12T18:14:23.581701",
+  "repo": "yyyzl/HotWordsLex",
+  "ref": "main",
+  "strategy": "ordered-fallback",
+  "notes": [
+    "按 endpoints 顺序尝试，第一个成功即使用",
+    "前 2/5/6 为第三方镜像，稳定性不保证，建议保留直连兜底"
+  ],
+  "artifacts": {
+    "hotwords_latest.txt": {
+      "path": "output/hotwords_latest.txt",
+      "endpoints": [
+        "https://gh-proxy.org/https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.txt",
+        "https://hk.gh-proxy.org/https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.txt",
+        "https://cdn.jsdelivr.net/gh/yyyzl/HotWordsLex@main/output/hotwords_latest.txt",
+        "https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.txt",
+        "https://cdn.gh-proxy.org/https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.txt",
+        "https://edgeone.gh-proxy.org/https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.txt"
+      ]
+    },
+    "hotwords_latest.json": {
+      "path": "output/hotwords_latest.json",
+      "endpoints": [
+        "https://gh-proxy.org/https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.json",
+        "https://hk.gh-proxy.org/https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.json",
+        "https://cdn.jsdelivr.net/gh/yyyzl/HotWordsLex@main/output/hotwords_latest.json",
+        "https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.json",
+        "https://cdn.gh-proxy.org/https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.json",
+        "https://edgeone.gh-proxy.org/https://raw.githubusercontent.com/yyyzl/HotWordsLex/main/output/hotwords_latest.json"
+      ]
+    }
+  }
+}
