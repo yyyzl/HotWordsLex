@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-02-15T04:21:17.266568",
+  "generated_at": "2026-02-16T04:24:01.790710",
   "source_hotwords": "hotwords.txt",
-  "snapshot_file": "hotwords_merged_20260215_042117.txt",
+  "snapshot_file": "hotwords_merged_20260216_042401.txt",
   "latest_file": "hotwords_latest.txt",
-  "sha256": "af5e39d684962b7f2a5ba676f8abe4a4d8bd79e4d1804c7c03723f769a5dbc55",
-  "total_terms": 395,
+  "sha256": "7f7c39327d56c7f0e9e8fc2130f760a435b45df47285b2ceef7e5b039b51d6e4",
+  "total_terms": 396,
   "non_empty_categories": 19
 }
