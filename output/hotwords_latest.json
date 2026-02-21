@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-02-20T04:13:30.101035",
+  "generated_at": "2026-02-21T04:04:48.209354",
   "source_hotwords": "hotwords.txt",
-  "snapshot_file": "hotwords_merged_20260220_041330.txt",
+  "snapshot_file": "hotwords_merged_20260221_040448.txt",
   "latest_file": "hotwords_latest.txt",
   "sha256": "7f7c39327d56c7f0e9e8fc2130f760a435b45df47285b2ceef7e5b039b51d6e4",
   "total_terms": 396,
