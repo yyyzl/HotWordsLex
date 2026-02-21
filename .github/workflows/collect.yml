@@ -6,7 +6,12 @@ on:
       - main
   schedule:
     - cron: '0 2 * * *'  # 每天 UTC 凌晨2点
-  workflow_dispatch:          # 手动触发
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'GitHub Environment 名称（用于加载 Environment vars/secrets）'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -15,6 +20,8 @@ jobs:
   collect:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment || vars.HOTWORDS_ENVIRONMENT || 'hotwords' }}
     env:
       PYTHONPATH: src
       HOTWORDS_PUBLISH_REPO: ${{ github.repository }}
