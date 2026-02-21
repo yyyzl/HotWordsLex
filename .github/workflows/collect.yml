@@ -50,11 +50,12 @@ jobs:
           fi
 
       - name: Run collection
+        env:
+          EXTRACT_ROUNDS: ${{ vars.EXTRACT_ROUNDS || '8' }}
+          MIN_FREQUENCY: ${{ vars.MIN_FREQUENCY || '15' }}
+          TIME_WINDOW_DAYS: ${{ vars.TIME_WINDOW_DAYS || '7' }}
+          HOTWORDS_FILE: ${{ vars.HOTWORDS_FILE || 'hotwords.txt' }}
         run: |
-          export EXTRACT_ROUNDS="${EXTRACT_ROUNDS:-5}"
-          export MIN_FREQUENCY="${MIN_FREQUENCY:-50}"
-          export TIME_WINDOW_DAYS="${TIME_WINDOW_DAYS:-3}"
-          export HOTWORDS_FILE="${HOTWORDS_FILE:-hotwords.txt}"
           echo "Resolved config: rounds=${EXTRACT_ROUNDS}, min_freq=${MIN_FREQUENCY}, days=${TIME_WINDOW_DAYS}, file=${HOTWORDS_FILE}"
           uv run python -m hotwords_lex --hotwords-file "${HOTWORDS_FILE}" --output output
 
