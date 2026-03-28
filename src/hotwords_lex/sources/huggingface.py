@@ -16,7 +16,7 @@ class HuggingFaceSource(BaseSource):
         try:
             resp = self._request_with_retry(
                 "https://huggingface.co/api/models",
-                params={"sort": "trending", "limit": 100, "direction": -1},
+                params={"sort": "trendingScore", "direction": -1, "limit": 100},
                 headers={"Accept": "application/json"},
             )
             for m in resp.json():
@@ -44,7 +44,7 @@ class HuggingFaceSource(BaseSource):
         try:
             resp = self._request_with_retry(
                 "https://huggingface.co/api/spaces",
-                params={"sort": "trending", "limit": 50, "direction": -1},
+                params={"sort": "trendingScore", "direction": -1, "limit": 50},
                 headers={"Accept": "application/json"},
             )
             for s in resp.json():

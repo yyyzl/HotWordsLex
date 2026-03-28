@@ -13,7 +13,7 @@ from .hackernews import HackerNewsSource
 from .github import GitHubSource
 from .devto import DevToSource
 from .huggingface import HuggingFaceSource
-from .reddit import RedditSource
+from .arxiv import ArxivSource
 from .ithome import ITHomeSource
 
 ALL_SOURCES = [
@@ -26,7 +26,7 @@ ALL_SOURCES = [
     GitHubSource,
     DevToSource,
     HuggingFaceSource,
-    RedditSource,
+    ArxivSource,
     ITHomeSource,
 ]
 
