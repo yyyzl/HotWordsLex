@@ -12,6 +12,9 @@ from .douyin import DouyinSource
 from .hackernews import HackerNewsSource
 from .github import GitHubSource
 from .devto import DevToSource
+from .huggingface import HuggingFaceSource
+from .reddit import RedditSource
+from .ithome import ITHomeSource
 
 ALL_SOURCES = [
     WeiboSource,
@@ -22,6 +25,9 @@ ALL_SOURCES = [
     HackerNewsSource,
     GitHubSource,
     DevToSource,
+    HuggingFaceSource,
+    RedditSource,
+    ITHomeSource,
 ]
 
 
