@@ -12,7 +12,9 @@ from collections import Counter
 class KeyPool:
     """线程安全的 API Key 轮询池，支持限流和错误追踪"""
 
-    def __init__(self, keys: list[str], *, sleep_range: tuple[float, float] = (0.3, 1.0)):
+    def __init__(
+        self, keys: list[str], *, sleep_range: tuple[float, float] = (0.3, 1.0)
+    ):
         if not keys:
             raise ValueError("至少需要一个 API Key")
         self._keys = list(keys)
@@ -20,7 +22,8 @@ class KeyPool:
         self._lock = threading.Lock()
         self._sleep_range = sleep_range
 
-        # 每个 key 的上次使用时间（限流用）
+        # 每个 key 独立锁 + 上次使用时间（per-key 限流，不阻塞其他 key）
+        self._key_locks: list[threading.Lock] = [threading.Lock() for _ in keys]
         self._last_used: dict[int, float] = {i: 0.0 for i in range(len(keys))}
         # 统计
         self._usage: Counter[int] = Counter()
@@ -31,12 +34,14 @@ class KeyPool:
         return len(self._keys)
 
     def next_key(self) -> str:
-        """获取下一个 key，自带随机 sleep 限流"""
+        """获取下一个 key，per-key 限流（不阻塞其他 key 的线程）"""
+        # 全局锁仅用于轮询分配 index，立即释放
         with self._lock:
             idx = next(self._cycle)
             self._usage[idx] += 1
 
-            # 限流：确保同一 key 不会太快被复用
+        # per-key 锁：同一 key 的并发请求排队限流，不同 key 互不阻塞
+        with self._key_locks[idx]:
             now = time.time()
             elapsed = now - self._last_used[idx]
             min_interval = random.uniform(*self._sleep_range)

@@ -51,7 +51,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, help="每批文本条数（默认50）")
     parser.add_argument("--hotwords-file", help="热词库路径（默认 hotwords.txt）")
     parser.add_argument("--output", help="输出目录（默认 output）")
-    parser.add_argument("--publish-repo", help="发布仓库 owner/repo（用于生成镜像地址）")
+    parser.add_argument(
+        "--publish-repo", help="发布仓库 owner/repo（用于生成镜像地址）"
+    )
     parser.add_argument("--publish-ref", help="发布分支（用于生成镜像地址，默认 main）")
     parser.add_argument("--proxy", help="代理: 'none'=直连, 'auto'=系统, 或地址")
     return parser.parse_args()
@@ -95,7 +97,9 @@ def run(cfg: Config) -> None:
         sys.exit(1)
 
     t_fetch = time.time()
-    print(f"\n[Phase 1] 数据采集完成，耗时 {t_fetch - t_start:.1f}s，共 {len(raw_texts)} 条\n")
+    print(
+        f"\n[Phase 1] 数据采集完成，耗时 {t_fetch - t_start:.1f}s，共 {len(raw_texts)} 条\n"
+    )
 
     # ============================================================
     # Phase 2: 多轮 LLM 提取
@@ -132,7 +136,8 @@ def run(cfg: Config) -> None:
 
     # 频次筛选
     high_freq_terms = filter_by_frequency(freq_table, cfg.min_frequency)
-    print(f"  高频词(>={cfg.min_frequency}次): {len(high_freq_terms)}")
+    high_freq_count_before_dedup = len(high_freq_terms)
+    print(f"  高频词(>={cfg.min_frequency}次): {high_freq_count_before_dedup}")
 
     # ASR 过滤
     high_freq_terms = asr_filter(high_freq_terms)
@@ -182,7 +187,7 @@ def run(cfg: Config) -> None:
     # 输出 changelog
     changelog_path = write_changelog(
         dedup_result,
-        total_collected=len(filter_by_frequency(freq_table, cfg.min_frequency)),
+        total_collected=high_freq_count_before_dedup,
         source_hotwords=cfg.hotwords_file,
         output_dir=cfg.output_dir,
     )
@@ -192,12 +197,24 @@ def run(cfg: Config) -> None:
     # ============================================================
     print(f"\n[Phase 5] 输出报告 ...")
     _save_report(
-        high_freq_terms, freq_distribution, total_raw_count, unique_count,
-        raw_texts, key_pool, cfg, dedup_result,
+        high_freq_terms,
+        freq_distribution,
+        total_raw_count,
+        unique_count,
+        raw_texts,
+        key_pool,
+        cfg,
+        dedup_result,
     )
     _print_summary(
-        high_freq_terms, freq_distribution, total_raw_count, unique_count,
-        added_count, key_pool, cfg, dedup_result,
+        high_freq_terms,
+        freq_distribution,
+        total_raw_count,
+        unique_count,
+        added_count,
+        key_pool,
+        cfg,
+        dedup_result,
     )
 
     t_total = time.time() - t_start
@@ -336,26 +353,31 @@ def _save_report(
 
     report_path = os.path.join(cfg.output_dir, f"report_{timestamp}.json")
     with open(report_path, "w", encoding="utf-8") as f:
-        json.dump({
-            "generated_at": datetime.now().isoformat(),
-            "config": {
-                "time_window_days": cfg.time_window_days,
-                "extract_rounds": cfg.extract_rounds,
-                "min_frequency": cfg.min_frequency,
-                "batch_size": cfg.batch_size,
-                "api_key_count": key_pool.size,
-                "max_workers": cfg.max_llm_workers,
-                "total_raw_texts": len(raw_texts),
+        json.dump(
+            {
+                "generated_at": datetime.now().isoformat(),
+                "config": {
+                    "time_window_days": cfg.time_window_days,
+                    "extract_rounds": cfg.extract_rounds,
+                    "min_frequency": cfg.min_frequency,
+                    "batch_size": cfg.batch_size,
+                    "api_key_count": key_pool.size,
+                    "max_workers": cfg.max_llm_workers,
+                    "total_raw_texts": len(raw_texts),
+                },
+                "stats": {
+                    "total_raw_extractions": total_raw,
+                    "unique_terms": unique_count,
+                    "high_frequency_terms": len(terms),
+                },
+                "deduplication": dedup_result.summary,
+                "frequency_distribution": freq_distribution,
+                "terms": terms,
             },
-            "stats": {
-                "total_raw_extractions": total_raw,
-                "unique_terms": unique_count,
-                "high_frequency_terms": len(terms),
-            },
-            "deduplication": dedup_result.summary,
-            "frequency_distribution": freq_distribution,
-            "terms": terms,
-        }, f, ensure_ascii=False, indent=2)
+            f,
+            ensure_ascii=False,
+            indent=2,
+        )
     print(f"  报告已保存: {report_path}")
 
 
@@ -387,7 +409,9 @@ def _print_summary(
     print(f"  版本号警告:     {len(dedup_result.version_warnings)}")
     if dedup_result.version_warnings:
         for vw in dedup_result.version_warnings:
-            print(f"    ! {vw['new_term']} ← 已有 {vw['existing_term']}（base: {vw['base_name']}）")
+            print(
+                f"    ! {vw['new_term']} ← 已有 {vw['existing_term']}（base: {vw['base_name']}）"
+            )
 
     # 频率分布
     print(f"\n频率分布：")

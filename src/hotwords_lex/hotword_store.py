@@ -8,15 +8,33 @@
 
 from __future__ import annotations
 
+import os
 import re
+import tempfile
 from pathlib import Path
 
 
 # 标准分类列表（与 hotwords.txt 对齐）
 CATEGORIES = [
-    "AI", "编程", "职场", "数码", "汽车", "金融", "社交", "购物",
-    "设计", "健康", "旅游", "文娱", "营销", "法律", "人力", "教育",
-    "房产", "运动", "政务",
+    "AI",
+    "编程",
+    "职场",
+    "数码",
+    "汽车",
+    "金融",
+    "社交",
+    "购物",
+    "设计",
+    "健康",
+    "旅游",
+    "文娱",
+    "营销",
+    "法律",
+    "人力",
+    "教育",
+    "房产",
+    "运动",
+    "政务",
 ]
 
 # 分类名别名映射（LLM 可能返回的变体 → 标准名）
@@ -206,7 +224,7 @@ class HotwordStore:
         return added
 
     def save(self) -> None:
-        """回写 hotwords.txt（空分类不输出）"""
+        """回写 hotwords.txt（原子写入：先写临时文件再 replace，防止半写损坏）"""
         lines = []
         for cat in self._category_order:
             words = self.categories.get(cat, [])
@@ -215,10 +233,32 @@ class HotwordStore:
             line = f"【{cat}】:[{','.join(words)}]"
             lines.append(line)
 
-        # 写入（末尾不加多余换行）
-        self.filepath.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        content = "\n".join(lines) + "\n"
+        parent = self.filepath.parent
+        parent.mkdir(parents=True, exist_ok=True)
+
+        fd, tmp_path = tempfile.mkstemp(
+            dir=parent,
+            prefix=".hotwords_",
+            suffix=".tmp",
+        )
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(content)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, self.filepath)
+        except BaseException:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            raise
+
         total = sum(len(ws) for ws in self.categories.values())
-        print(f"[词库] 已保存 {len(self.categories)} 个分类，{total} 个词条 → {self.filepath}")
+        print(
+            f"[词库] 已保存 {len(self.categories)} 个分类，{total} 个词条 → {self.filepath}"
+        )
 
     def get_all_words(self) -> set[str]:
         """返回所有词条的小写集合"""
