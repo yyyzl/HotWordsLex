@@ -15,19 +15,29 @@ from .devto import DevToSource
 from .huggingface import HuggingFaceSource
 from .arxiv import ArxivSource
 from .ithome import ITHomeSource
+from .reddit import RedditSource
+from .x_twitter import XTwitterSource
+from .polymarket import PolymarketSource
 
 ALL_SOURCES = [
+    # 中文平台（无需认证）
     WeiboSource,
     BaiduSource,
     BilibiliSource,
     ToutiaoSource,
     DouyinSource,
+    ITHomeSource,
+    # 英文平台（无需认证）
     HackerNewsSource,
     GitHubSource,
     DevToSource,
     HuggingFaceSource,
     ArxivSource,
-    ITHomeSource,
+    # 国际平台（无需认证）
+    RedditSource,
+    PolymarketSource,
+    # 需要 Token（缺失时自动跳过）
+    XTwitterSource,
 ]
 
 
